@@ -20,7 +20,7 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 class PestDetector:
     def __init__(self):
-        self.model = tf.keras.models.load_model('model/agrovoicev3.h5')
+        self.model = tf.keras.models.load_model('model/agrovoicev4.h5')
 
     def preprocess_image(self, image):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -47,7 +47,6 @@ class GeminiChatBot:
 detector = PestDetector()
 gemini = GeminiChatBot()
 
-
 @app.route('/')
 def start():
     return 'Server is running'
@@ -66,8 +65,9 @@ def classify_image():
 
     pred_class, confidence = detector.predict(image)
     pest_name = label_mapping.get(pred_class, 'Unknown')
+    print(pest_name, confidence)
 
-    response = gemini.get_response(pest_name + "is the pest identified in the image. What are the pesticides that can be used for " + pest_name + "?" + "and give suggestions for the farmer using organic methods and safeguard their crops from " + pest_name )
+    response = gemini.get_response("You are a farm pest detector that tell about the pest obtained from the mobilenet model. tell few words about this insect" + pest_name + " in simple terms farmers about five things description, impact on plant and yields, plants affected, what to do after, prevention and extra tips for good farming that could help the farmer understand better" )
 
     data = {
         'pest': pest_name,
